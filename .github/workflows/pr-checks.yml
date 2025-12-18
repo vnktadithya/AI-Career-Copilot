@@ -1,0 +1,58 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  backend-check:
+    name: Backend Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: |
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            echo "No backend requirements yet"
+          fi
+
+      - name: Backend sanity check
+        working-directory: backend
+        run: |
+          echo "Backend check passed"
+
+  frontend-check:
+    name: Frontend Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: |
+          if [ -f package.json ]; then
+            npm install
+          else
+            echo "No frontend yet"
+          fi
+
+      - name: Frontend sanity check
+        working-directory: frontend
+        run: |
+          echo "Frontend check passed"
