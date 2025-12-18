@@ -38,21 +38,34 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check if frontend exists
+        id: frontend_check
+        run: |
+          if [ -d "frontend" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Set up Node
+        if: steps.frontend_check.outputs.exists == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: "18"
 
       - name: Install frontend dependencies
+        if: steps.frontend_check.outputs.exists == 'true'
         working-directory: frontend
         run: |
-          if [ -f package.json ]; then
-            npm install
-          else
-            echo "No frontend yet"
-          fi
+          npm install
 
       - name: Frontend sanity check
+        if: steps.frontend_check.outputs.exists == 'true'
         working-directory: frontend
         run: |
           echo "Frontend check passed"
+
+      - name: Skip frontend check
+        if: steps.frontend_check.outputs.exists == 'false'
+        run: |
+          echo "Frontend folder not present — skipping frontend checks"
