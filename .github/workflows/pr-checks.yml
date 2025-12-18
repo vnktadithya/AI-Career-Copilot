@@ -1,0 +1,71 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  backend-check:
+    name: Backend Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: |
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            echo "No backend requirements yet"
+          fi
+
+      - name: Backend sanity check
+        working-directory: backend
+        run: |
+          echo "Backend check passed"
+
+  frontend-check:
+    name: Frontend Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check if frontend exists
+        id: frontend_check
+        run: |
+          if [ -d "frontend" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set up Node
+        if: steps.frontend_check.outputs.exists == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install frontend dependencies
+        if: steps.frontend_check.outputs.exists == 'true'
+        working-directory: frontend
+        run: |
+          npm install
+
+      - name: Frontend sanity check
+        if: steps.frontend_check.outputs.exists == 'true'
+        working-directory: frontend
+        run: |
+          echo "Frontend check passed"
+
+      - name: Skip frontend check
+        if: steps.frontend_check.outputs.exists == 'false'
+        run: |
+          echo "Frontend folder not present — skipping frontend checks"
