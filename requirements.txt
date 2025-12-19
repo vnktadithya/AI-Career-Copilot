@@ -23,7 +23,7 @@ linkedin-api==2.0.0  # Unofficial LinkedIn API (or use official SDK)
 celery==5.3.4  # Or Google Cloud Tasks client
 google-cloud-tasks==2.14.2
 google-cloud-pubsub==2.18.4
-google-cloud-secret-manager==2.16.5
+google-cloud-secret-manager==2.16.4
 
 # Utils
 python-dotenv==1.0.0
