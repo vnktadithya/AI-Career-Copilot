@@ -186,3 +186,142 @@ CREATE POLICY "Users manage own media" ON story_media_assets
 -- Indexes for performance
 CREATE INDEX idx_repos_user ON repositories(user_id);
 CREATE INDEX idx_stories_user_pending ON stories(user_id) WHERE status = 'pending';
+
+
+-- New Modifications
+
+-- =========================================================
+-- Schema Extension: Semantic context for Gemini (v2)
+-- =========================================================
+
+ALTER TABLE stories
+ADD COLUMN IF NOT EXISTS semantic_tags JSONB DEFAULT '[]'::JSONB;
+
+-- =========================================================
+-- Project Memory Snapshots (Rolling semantic memory)
+-- =========================================================
+
+CREATE TABLE IF NOT EXISTS project_memory_snapshots (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  repo_id UUID REFERENCES repositories(id) ON DELETE CASCADE,
+
+  project_summary TEXT NOT NULL,
+  -- High-level explanation of what the project is and why it exists
+
+  technical_summary TEXT,
+  -- Architecture, stack, key systems
+
+  narrative_state JSONB DEFAULT '{}'::JSONB,
+  -- {
+  --   "stage": "active-development | beta | stable | maintenance",
+  --   "last_major_milestone": "...",
+  --   "public_storyline": "..."
+  -- }
+
+  publicly_announced JSONB DEFAULT '[]'::JSONB,
+  -- List of story_ids or summaries already shared publicly (LinkedIn etc.)
+
+  source_story_ids JSONB DEFAULT '[]'::JSONB,
+  -- Which stories were compacted into this snapshot
+
+  bootstrap_source VARCHAR DEFAULT 'observed'
+    CHECK (bootstrap_source IN ('observed', 'inferred')),
+
+  last_compacted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+
+  UNIQUE(repo_id)
+);
+
+
+-- =========================================================
+-- User Voice Profiles (learned writing style)
+-- =========================================================
+
+CREATE TABLE IF NOT EXISTS user_voice_profiles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+
+  voice_signature JSONB DEFAULT '{}'::JSONB,
+    -- {
+  --   "avg_sentence_length": 18,
+  --   "emoji_frequency": 0.12,
+  --   "tone_distribution": {"technical": 0.6, "storytelling": 0.4},
+  --   "preferred_hooks": ["problem-first", "impact-first"]
+  -- }
+
+  canonical_samples JSONB DEFAULT '[]'::JSONB,
+    -- Only best approved outputs (not everything)
+
+  last_updated TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+
+  UNIQUE(user_id)
+);
+
+-- =========================================================
+-- Repository Context Cache (MCP optimization layer)
+-- =========================================================
+
+CREATE TABLE IF NOT EXISTS repo_context_cache (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  repo_id UUID REFERENCES repositories(id) ON DELETE CASCADE,
+
+  readme_summary TEXT,
+  -- Current README distilled to a short summary
+
+  repo_structure JSONB,
+  -- { "modules": 5, "key_dirs": ["api", "frontend"] }
+
+  recent_commits JSONB DEFAULT '[]'::JSONB,
+  -- Last 5 commits used for reasoning
+
+  last_mcp_hash VARCHAR,
+  -- Hash of repo state (to detect changes)
+
+  last_updated TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  ttl TIMESTAMP WITH TIME ZONE,
+
+  UNIQUE(repo_id)
+);
+
+
+-- =========================================================
+-- RLS Policies for Context Tables
+-- =========================================================
+
+-- Project memory
+ALTER TABLE project_memory_snapshots ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own project memory"
+ON project_memory_snapshots
+FOR SELECT
+USING (
+  EXISTS (
+    SELECT 1 FROM repositories r
+    WHERE r.id = project_memory_snapshots.repo_id
+    AND r.user_id = auth.uid()
+  )
+);
+
+-- User voice profile
+ALTER TABLE user_voice_profiles ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users manage own voice profile"
+ON user_voice_profiles
+FOR ALL
+USING (auth.uid() = user_id);
+
+-- Repo context cache
+ALTER TABLE repo_context_cache ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own repo cache"
+ON repo_context_cache
+FOR SELECT
+USING (
+  EXISTS (
+    SELECT 1 FROM repositories r
+    WHERE r.id = repo_context_cache.repo_id
+    AND r.user_id = auth.uid()
+  )
+);
