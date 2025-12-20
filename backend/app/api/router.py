@@ -1,0 +1,7 @@
+# app/api/router.py
+from fastapi import APIRouter
+from backend.app.api.v1.endpoints import auth, users, repos, stories, webhooks, audit, health
+
+api_router = APIRouter(prefix="/api/v1")
+
+api_router.include_router(health.router, tags=["health"])
