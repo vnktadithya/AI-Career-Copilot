@@ -5,3 +5,4 @@ from backend.app.api.v1.endpoints import auth, users, repos, stories, webhooks, 
 api_router = APIRouter(prefix="/api/v1")
 
 api_router.include_router(health.router, tags=["health"])
+api_router.include_router(auth.router, tags=["authentication"])
