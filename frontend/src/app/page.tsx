@@ -7,7 +7,7 @@ import { motion } from 'framer-motion'
 export default function LandingPage() {
   return (
     <main className="h-screen w-screen overflow-hidden bg-black text-white relative">
-      
+
       {/* Background Gradient */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -26,13 +26,6 @@ export default function LandingPage() {
         <h1 className="text-xl font-semibold tracking-wide">
           AI Powered Career Copilot
         </h1>
-
-        <Link
-          href="/auth"
-          className="text-sm font-medium px-4 py-2 rounded-lg border border-white/20 hover:border-white/40 transition"
-        >
-          Get Started
-        </Link>
       </motion.nav>
 
       {/* Main Content Grid */}
@@ -63,7 +56,7 @@ export default function LandingPage() {
             transition={{ delay: 0.8, duration: 0.4 }}
           >
             <Link
-              href="/auth"
+              href="/app"
               className="mt-8 inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-white text-black font-semibold text-lg hover:bg-gray-200 transition"
             >
               Get Started

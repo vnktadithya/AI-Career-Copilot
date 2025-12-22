@@ -6,17 +6,23 @@ import { AuthFooter } from '@//components/auth/AuthFooter'
 import { supabase } from '@/lib/supabaseClient'
 import { useState } from 'react'
 
-export default function LoginPage() {
+export default function SignupPage() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [username, setUsername] = useState('')
     const [error, setError] = useState<string | null>(null)
 
-    const handleLogin = async () => {
+    const handleSignup = async () => {
         setError(null)
 
-        const { error } = await supabase.auth.signInWithPassword({
+        const { error } = await supabase.auth.signUp({
             email,
             password,
+            options: {
+                data: {
+                    username,
+                },
+            },
         })
 
         if (error) {
@@ -28,13 +34,21 @@ export default function LoginPage() {
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-zinc-900 to-black px-4">
             <AuthCard>
                 <h1 className="text-2xl font-semibold tracking-tight mb-1">
-                    Sign in
+                    Create your account
                 </h1>
                 <p className="text-sm text-zinc-400 mb-6">
-                    Continue building your career story.
+                    Start building your professional narrative.
                 </p>
 
                 <div className="space-y-4">
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-2.5 text-sm"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+
                     <input
                         type="email"
                         placeholder="Email"
@@ -56,14 +70,14 @@ export default function LoginPage() {
                     )}
 
                     <button
-                        onClick={handleLogin}
+                        onClick={handleSignup}
                         className="
                 w-full rounded-xl bg-white text-black
                 py-2.5 text-sm font-medium
                 hover:opacity-90 transition
             "
                     >
-                        Sign in
+                        Sign up
                     </button>
                 </div>
 
@@ -72,9 +86,9 @@ export default function LoginPage() {
                 <OAuthButtons />
 
                 <AuthFooter
-                    text="Don't have an account?"
-                    linkText="Sign up"
-                    href="/auth/signup"
+                    text="Already have an account?"
+                    linkText="Sign in"
+                    href="/auth/login"
                 />
             </AuthCard>
         </div>
