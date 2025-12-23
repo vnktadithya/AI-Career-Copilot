@@ -9,6 +9,7 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 ENV_PATH = os.path.join(CURRENT_DIR, "../../.env")
 
 class Settings(BaseSettings):
+    # Supabase
     SUPABASE_URL: AnyHttpUrl
     SUPABASE_ANON_KEY: str
     SUPABASE_SERVICE_ROLE_KEY: str
@@ -17,6 +18,19 @@ class Settings(BaseSettings):
 
     # Environment
     ENV: str = "development"
+
+    # 🔑 GitHub OAuth (required for Option A)
+    GITHUB_CLIENT_ID: str
+    GITHUB_CLIENT_SECRET: str
+    GITHUB_REDIRECT_URI: AnyHttpUrl
+
+    # LinkedIn OAuth
+    LINKEDIN_CLIENT_ID: str
+    LINKEDIN_CLIENT_SECRET: str
+    LINKEDIN_REDIRECT_URI: AnyHttpUrl
+
+    # Frontend
+    FRONTEND_URL: AnyHttpUrl
 
     # Pydantic V2 Configuration
     model_config = SettingsConfigDict(

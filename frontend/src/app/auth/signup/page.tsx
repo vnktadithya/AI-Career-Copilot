@@ -5,8 +5,12 @@ import { OAuthButtons } from '@//components/auth/OAuthButtons'
 import { AuthFooter } from '@//components/auth/AuthFooter'
 import { supabase } from '@/lib/supabaseClient'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+
+
 
 export default function SignupPage() {
+    const router = useRouter()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [username, setUsername] = useState('')
@@ -27,7 +31,9 @@ export default function SignupPage() {
 
         if (error) {
             setError(error.message)
+            return
         }
+        router.replace('/dashboard/settings')
     }
 
     return (
