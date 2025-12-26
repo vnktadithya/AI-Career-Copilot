@@ -1,11 +1,11 @@
 from typing import Optional
 from uuid import UUID
-from backend.app.database.supabase_client import supabase
+from backend.app.database.supabase_client import supabase_service
 
 
 def get_user_by_id(user_id: UUID) -> Optional[dict]:
     response = (
-        supabase
+        supabase_service
         .table("users")
         .select("*")
         .eq("id", str(user_id))
@@ -31,7 +31,7 @@ def create_user(
     role: str = "user",
 ) -> dict:
     response = (
-        supabase
+        supabase_service
         .table("users")
         .insert({
             "id": str(user_id),

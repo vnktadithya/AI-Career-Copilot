@@ -56,7 +56,7 @@ export default function LandingPage() {
             transition={{ delay: 0.8, duration: 0.4 }}
           >
             <Link
-              href="/app"
+              href="/auth/login"
               className="mt-8 inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-white text-black font-semibold text-lg hover:bg-gray-200 transition"
             >
               Get Started

@@ -1,0 +1,38 @@
+{
+  "name": "career-story-copilot",
+  "displayName": "Career Story Copilot",
+  "description": "Observes development activity and sends signals to Career Story OS.",
+  "version": "0.1.0",
+  "publisher": "career-story",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": [
+    "onStartupFinished",
+    "workspaceContains:.git"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+    {
+      "command": "careerStory.login",
+      "title": "Career Story: Login"
+    },
+    {
+      "command": "careerStory.logout",
+      "title": "Career Story: Logout"
+    }
+  ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.2.2"
+  }
+}

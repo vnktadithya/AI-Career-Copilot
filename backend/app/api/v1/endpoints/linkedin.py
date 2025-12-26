@@ -28,7 +28,7 @@ async def connect_linkedin(request: Request, db: AsyncSession = Depends(get_db))
         "response_type": "code",
         "client_id": settings.LINKEDIN_CLIENT_ID,
         "redirect_uri": settings.LINKEDIN_REDIRECT_URI,
-        "scope": "openid profile email w_member_social ",
+        "scope": "openid profile email w_member_social",
         "state": str(current_user.id)
     }
 

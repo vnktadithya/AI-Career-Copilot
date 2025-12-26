@@ -2,6 +2,9 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "vscode": "^1.85.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",

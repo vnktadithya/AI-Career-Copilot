@@ -29,8 +29,12 @@ class Settings(BaseSettings):
     LINKEDIN_CLIENT_SECRET: str
     LINKEDIN_REDIRECT_URI: AnyHttpUrl
 
-    # Frontend
+    # Frontend & Backend
     FRONTEND_URL: AnyHttpUrl
+    BACKEND_URL: AnyHttpUrl
+
+    # VS Code JWT
+    VSCODE_JWT_SECRET: str
 
     # Pydantic V2 Configuration
     model_config = SettingsConfigDict(
